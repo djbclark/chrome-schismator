@@ -22,7 +22,13 @@ test -d $APPLESCRIPTS || mkdir $APPLESCRIPTS
 test -d $LAUNCHERS || mkdir $LAUNCHERS
 test -d $RUNTIMES || mkdir $RUNTIMES
 
-grep '"username"' Profile*/Preferences Default/Preferences | grep -v '               ' | awk -F : '{print $1";"$3}' | sed 's:/Preferences::g' | sed 's:\@:-at-:g' | sed 's/;\ /;/g' > $CDI/profiles.txt
+ls Default/Preferences Profile*/Preferences | sed s:/Preferences::g > profiles.tmp
+while read PROFILE; do
+  echo -n ${PROFILE}\;
+  cd "$PROFILE"
+  ruby -rjson -e 'j = JSON.parse(File.read("Preferences")); puts j["profile"]["name"]' | sed 's:\@:-at-:g' | sed 's/;\ /;/g' | sed 's:\ ::g' | sed 's/^/"/g' | sed 's/$/"/g'
+  cd ..
+done < profiles.tmp > $CDI/profiles.txt
 # Like: Profile 1;"webmaster-at-example.org"
 
 echo "Be patient, this involves copying a lot of data..."
@@ -39,6 +45,10 @@ LINK="$(echo $PROFILE | awk -F\; '{print $2}' | sed 's/\ /\-/g' | sed 's/"//g' |
 APP="$(echo $LINK | sed 's/^cdi-profile-//g' | sed 's/$/-DO-NOT-RUN-DIRECTLY-JUST-USE-FOR-CHANGING-ICON-cdi\.app/g')"
 # Like: webmaster-at-example.org-DO-NOT-RUN-DIRECTLY-JUST-USE-FOR-CHANGING-ICON-cdi.app
 
+ICONQ="$(echo -e 'Icon\015')"
+#ICON="$(echo -e 'Icon\015')/..namedfork/rsrc"
+# This is the resource fork of the Icon? file - you can cat / redirect but not cp
+
 SHIM="$(echo $LINK | sed 's/^cdi-profile-//g' | sed 's/$/\.app/g')"
 # Like: webmaster-at-example.org.app
 
@@ -51,7 +61,11 @@ test -L "$LINK" || ln -s "$DIR" "$LINK"
 cd "$LINK"
 test -L Default || ln -s . Default
 cd /Users/$USER/Library/Application\ Support/Google/Chrome
-test -d "$RUNTIMES/$APP" || cp -R /Applications/Google\ Chrome.app "$RUNTIMES/$APP"
+test -f "$RUNTIMES/$APP/$ICONQ" && cp "$RUNTIMES/$APP/$ICONQ" "$RUNTIMES/${APP}.icon"
+test -d "$RUNTIMES/$APP" && rm -rf "$RUNTIMES/$APP"
+cp -R /Applications/Google\ Chrome.app "$RUNTIMES/$APP"
+test -f "$RUNTIMES/${APP}.icon" && cp "$RUNTIMES/${APP}.icon" "$RUNTIMES/$APP/$ICONQ"
+SetFile -a C "$RUNTIMES/$APP"
 
 ## This section disabled because enabling it makes automatic profile login not work.
 ## There is a chance someone who knows more about chrome will help at some point; see:
