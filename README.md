@@ -1,5 +1,5 @@
 # chrome-apartheid
-Multiple Google Chrome instances under Mac OS X. Seperate dock icons, each associated with a different user profile.
+Multiple Google Chrome instances under Mac OS X. Seperate dock icons, each associated with a different user profile. "Window" menu shows only windows associated with the instance.
 
 Here is my solution, which gives you multiple instances, a dock launch menu for the instances, and different icons for each instance. When you run the script it'll automatically go through all your profiles, and then tell you what to do next.
 
