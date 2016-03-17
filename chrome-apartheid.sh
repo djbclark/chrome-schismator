@@ -1,6 +1,7 @@
 #!/bin/bash
 
-# cdi.sh - Make chrome profiles behave like multiple browsers on Mac OS X
+# chrome-apartheid.sh
+#          Make chrome profiles behave like multiple browsers on Mac OS X
 #          (Tested on Yoshmite). Make profiles work like seperate applications
 #          - esp. useful if you want to easily switch between different browsers
 #          in different virtual desktops / workspaces, or don't want work
