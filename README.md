@@ -1,6 +1,8 @@
 # chrome-schismator
 Multiple Google Chrome instances under Mac OS X. Seperate dock icons, each associated with a different user profile. "Window" menu shows only windows associated with the instance.
 
+* Please also read the script itself for more doc, esp. the stuff at the end of the script. *
+
 Here is my solution, which gives you multiple instances, a dock launch menu for the instances, and different icons for each instance. When you run the script it'll automatically go through all your profiles, and then tell you what to do next.
 
 For icons, you can use any PNG (or probably many other formats).
@@ -16,3 +18,4 @@ One thing that isn't working yet is the ability to assign different user profile
 http://www.easyicon.net/
 
 http://digiwonk.wonderhowto.com/how-to/get-back-avatars-chrome-switch-user-profiles-more-easily-0159605/
+
