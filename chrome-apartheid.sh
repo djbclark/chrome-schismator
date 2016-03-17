@@ -30,7 +30,7 @@ fi
 ls Profile*/Preferences | sed s:/Preferences::g >> profiles.tmp
 
 while read PROFILE; do
-  echo "$PROFILE;\c";
+  echo -n ${PROFILE}\;
   cd "$PROFILE"
   ruby -rjson -e 'j = JSON.parse(File.read("Preferences")); puts j["profile"]["name"]' | sed 's:\@:-at-:g' | sed 's/;\ /;/g' | sed 's:\ ::g' | sed 's/^/"/g' | sed 's/$/"/g'
   cd ..
@@ -41,59 +41,61 @@ echo "Be patient, this involves copying a lot of data..."
 
 while read PROFILE; do
 
-  DIR="$(echo $PROFILE | awk -F\; '{print $1}')"
-  # Like: DIR='Profile 1'
-  echo "Working on profile: $DIR"
+DIR="$(echo $PROFILE | awk -F\; '{print $1}')"
+# Like: DIR='Profile 1'
+echo "Working on profile: $DIR"
 
-  LINK="$(echo $PROFILE | awk -F\; '{print $2}' | sed 's/\ /\-/g' | sed 's/"//g' | sed 's/^/cdi-profile-/g')"
-  # Like: cdi-profile-webmaster-at-example.org
+LINK="$(echo $PROFILE | awk -F\; '{print $2}' | sed 's/\ /\-/g' | sed 's/"//g' | sed 's/^/cdi-profile-/g')"
+# Like: cdi-profile-webmaster-at-example.org
 
-  APP="$(echo $LINK | sed 's/^cdi-profile-//g' | sed 's/$/-DO-NOT-RUN-DIRECTLY-JUST-USE-FOR-CHANGING-ICON-cdi\.app/g')"
-  # Like: webmaster-at-example.org-DO-NOT-RUN-DIRECTLY-JUST-USE-FOR-CHANGING-ICON-cdi.app
+APP="$(echo $LINK | sed 's/^cdi-profile-//g' | sed 's/$/-DO-NOT-RUN-DIRECTLY-JUST-USE-FOR-CHANGING-ICON-cdi\.app/g')"
+# Like: webmaster-at-example.org-DO-NOT-RUN-DIRECTLY-JUST-USE-FOR-CHANGING-ICON-cdi.app
 
-  ICONQ="$(echo -e 'Icon\015')"
-  #ICON="$(echo -e 'Icon\015')/..namedfork/rsrc"
-  # This is the resource fork of the Icon? file - you can cat / redirect but not cp
+ICONQ="$(echo -e 'Icon\015')"
+#ICON="$(echo -e 'Icon\015')/..namedfork/rsrc"
+# This is the resource fork of the Icon? file - you can cat / redirect but not cp
 
-  SHIM="$(echo $LINK | sed 's/^cdi-profile-//g' | sed 's/$/\.app/g')"
-  # Like: webmaster-at-example.org.app
+SHIM="$(echo $LINK | sed 's/^cdi-profile-//g' | sed 's/$/\.app/g')"
+# Like: webmaster-at-example.org.app
 
-  TXT="$APPLESCRIPTS/$(echo $LINK | sed 's:^cdi-profile-:chrome-:g' | sed 's/$/\.txt/g')"
-  # Like:
-  # cdi-chrome-multiple-profile-instances-in-dock-with-different-icons.d
-  # /Applescript-Sources/chrome-webmaster-at-example.org.txt
+TXT="$APPLESCRIPTS/$(echo $LINK | sed 's:^cdi-profile-:chrome-:g' | sed 's/$/\.txt/g')"
+# Like:
+# cdi-chrome-multiple-profile-instances-in-dock-with-different-icons.d
+# /Applescript-Sources/chrome-webmaster-at-example.org.txt
 
-  test -L "$LINK" || ln -s "$DIR" "$LINK"
-  cd "$LINK"
-  test -L Default || ln -s . Default
-  cd /Users/$USER/Library/Application\ Support/Google/Chrome
-  test -f "$RUNTIMES/$APP/$ICONQ" && cp "$RUNTIMES/$APP/$ICONQ" "$RUNTIMES/${APP}.icon"
-  test -d "$RUNTIMES/$APP" && rm -rf "$RUNTIMES/$APP"
-  cp -R /Applications/Google\ Chrome.app "$RUNTIMES/$APP"
-  test -f "$RUNTIMES/${APP}.icon" && cp "$RUNTIMES/${APP}.icon" "$RUNTIMES/$APP/$ICONQ"
-  SetFile -a C "$RUNTIMES/$APP"
+test -L "$LINK" || ln -s "$DIR" "$LINK"
+cd "$LINK"
+test -L Default || ln -s . Default
+cd /Users/$USER/Library/Application\ Support/Google/Chrome
+test -f "$RUNTIMES/$APP/$ICONQ" && cp "$RUNTIMES/$APP/$ICONQ" "$RUNTIMES/${APP}.icon"
+test -d "$RUNTIMES/$APP" && rm -rf "$RUNTIMES/$APP"
+cp -R /Applications/Google\ Chrome.app "$RUNTIMES/$APP"
+test -f "$RUNTIMES/${APP}.icon" && cp "$RUNTIMES/${APP}.icon" "$RUNTIMES/$APP/$ICONQ"
+SetFile -a C "$RUNTIMES/$APP"
 
-  ## This section disabled because enabling it makes automatic profile login not work.
-  ## There is a chance someone who knows more about chrome will help at some point; see:
-  ## https://code.google.com/p/chromium/issues/detail?id=460787
-  ## https://groups.google.com/a/chromium.org/forum/#!topic/chromium-discuss/0HEeMuh8WqA
-  ## https://github.com/lhl/chrome-ssb-osx
-  # Change Bundle ID so desktop assignation works. Not sure if this will survive updates.
-  # CFBundleIdentifier must contain only alphanumeric (A-Z,a-z,0-9), hyphen (-), and period (.) characters.
-  # (Based on fiddling around there also seems to be a length limit.)
-  #UUID="$(echo $APP | md5sum | awk '{print $1}' | tr [0-9] [A-Z] | cut -c 1-4,29-32)"
-  #plutil -replace CFBundleIdentifier -string "cdi.$UUID" -- "$RUNTIMES/$APP/Contents/Info.plist"
-  #plutil -replace CFBundleName -string "$UUID" -- "$RUNTIMES/$APP/Contents/Info.plist"
-  #plutil -replace CFBundleDisplayName -string "$UUID" -- "$RUNTIMES/$APP/Contents/Info.plist"
-  #plutil -replace KSProductID -string "cdi.$UUID" -- "$RUNTIMES/$APP/Contents/Info.plist"
-  # To check: defaults read ~/Library/Preferences/com.apple.spaces.plist app-bindings
+## This section disabled because enabling it makes automatic profile login not work.
+## There is a chance someone who knows more about chrome will help at some point; see:
+## https://code.google.com/p/chromium/issues/detail?id=460787
+## https://groups.google.com/a/chromium.org/forum/#!topic/chromium-discuss/0HEeMuh8WqA
+## https://github.com/lhl/chrome-ssb-osx
+# Change Bundle ID so desktop assignation works. Not sure if this will survive updates.
+# CFBundleIdentifier must contain only alphanumeric (A-Z,a-z,0-9), hyphen (-), and period (.) characters.
+# (Based on fiddling around there also seems to be a length limit.)
+#UUID="$(echo $APP | md5sum | awk '{print $1}' | tr [0-9] [A-Z] | cut -c 1-4,29-32)"
+#plutil -replace CFBundleIdentifier -string "cdi.$UUID" -- "$RUNTIMES/$APP/Contents/Info.plist"
+#plutil -replace CFBundleName -string "$UUID" -- "$RUNTIMES/$APP/Contents/Info.plist"
+#plutil -replace CFBundleDisplayName -string "$UUID" -- "$RUNTIMES/$APP/Contents/Info.plist"
+#plutil -replace KSProductID -string "cdi.$UUID" -- "$RUNTIMES/$APP/Contents/Info.plist"
+# To check: defaults read ~/Library/Preferences/com.apple.spaces.plist app-bindings
 
-  echo "on run" > $TXT
-  echo "do shell script \c" >> $TXT
-  echo '"/Users/'$USER'/Library/Application\\\\ Support/Google/Chrome/'$RUNTIMES'/'$APP'/Contents/MacOS/Google\\\\ Chrome --user-data-dir=/Users/'$USER'/Library/Application\\\\ Support/Google/Chrome/'$LINK'  > /dev/null 2>&1 &"' >> $TXT
-  echo "quit" >> $TXT
-  echo "end run" >> $TXT
-  test -d "$LAUNCHERS/$SHIM" || osacompile -o "$LAUNCHERS/$SHIM" $TXT
+echo "on run" > $TXT
+echo -n "do shell script " >> $TXT
+echo -n '"' >> $TXT
+echo -n "/Users/$USER/Library/Application\\\\ Support/Google/Chrome/$RUNTIMES/$APP/Contents/MacOS/Google\\\\ Chrome --user-data-dir=/Users/$USER/Library/Application\\\\ Support/Google/Chrome/$LINK" >> $TXT
+echo ' > /dev/null 2>&1 &"' >> $TXT
+echo "quit" >> $TXT
+echo "end run" >> $TXT
+test -d "$LAUNCHERS/$SHIM" || osacompile -o "$LAUNCHERS/$SHIM" $TXT
 
 done < $CDI/profiles.txt
 
