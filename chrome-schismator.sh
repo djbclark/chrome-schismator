@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# chrome-apartheid.sh
+# chrome-schismator.sh
 #          Make chrome profiles behave like multiple browsers on Mac OS X
 #          (Tested on Yoshmite). Make profiles work like seperate applications
 #          - esp. useful if you want to easily switch between different browsers
