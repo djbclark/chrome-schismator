@@ -114,9 +114,13 @@ echo
 echo '3. BE SURE to only open Chrome via this stack. DO NOT pin the app-area'
 echo '   Chrome icon(s) to the app area of the dock! DO NOT run "normal" Chrome!'
 echo
-echo 'The only exception to (3) is if you need to add a new profile. In that case,'
-echo 'close all instances, then open the "normal" Chrome, add profile, close, and'
-echo 'then run this script again.'
+echo 'The only exceptions to (3) are: If you need to add a new profile. In that'
+echo 'case, close all instances, then open the "normal" Chrome, add profile, close,'
+echo 'and then run this script again. To update all chrome instances, do the same'
+echo 'but instead of add profile go to "Help -> About Google Chrome" and update'
+echo 'chrome, then exit and run this script so all your profile-specific chromes'
+echo 'are updated.'
+
 echo
 echo 'Note: when you launch first time you will get "Welcome to Google Chrome"'
 echo '      dialog box. This is normal; do not worry. It will ask if you want'
