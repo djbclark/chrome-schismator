@@ -22,7 +22,12 @@ test -d $APPLESCRIPTS || mkdir $APPLESCRIPTS
 test -d $LAUNCHERS || mkdir $LAUNCHERS
 test -d $RUNTIMES || mkdir $RUNTIMES
 
-ls Profile 1/Preferences Profile*/Preferences | sed s:/Preferences::g > profiles.tmp
+test -f profiles.tmp && rm profiles.tmp
+if [ -f Default/Preferences ]; then
+  ls Default/Preferences | sed s:/Preferences::g >> profiles.tmp
+fi
+ls Profile*/Preferences | sed s:/Preferences::g >> profiles.tmp
+
 while read PROFILE; do
   echo "$PROFILE;\c";
   cd "$PROFILE"
