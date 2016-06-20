@@ -46,6 +46,7 @@ DIR="$(echo $PROFILE | awk -F\; '{print $1}')"
 echo "Working on profile: $DIR"
 
 LINK="$(echo $PROFILE | awk -F\; '{print $2}' | sed 's/\ /\-/g' | sed 's/"//g' | sed 's/^/cdi-profile-/g')"
+# '
 # Like: cdi-profile-webmaster-at-example.org
 
 APP="$(echo $LINK | sed 's/^cdi-profile-//g' | sed 's/$/-DO-NOT-RUN-DIRECTLY-JUST-USE-FOR-CHANGING-ICON-cdi\.app/g')"
